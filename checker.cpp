@@ -3,42 +3,46 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-
   string kase = argv[1];
 
-  string cmd = "sol < " + kase + ".in > " + kase + ".out";
+  string cmd = "./sol < " + kase + ".in > " + kase + ".out";
 
   system(cmd.c_str());
 
   freopen((kase + ".in").c_str(), "r", stdin);
-  int b, l, d; cin >> b >> l >> d;
+  int b, l, d;
+  cin >> b >> l >> d;
 
   map<int, int> sc;
   for (int i = 0; i < b; ++i) cin >> sc[i];
 
   map<int, pair<int, int>> mp;
   for (int i = 0; i < l; ++i) {
-    int n, t, m; cin >> n >> t >> m;
+    int n, t, m;
+    cin >> n >> t >> m;
     mp[i] = pair<int, int>{t, m};
     int tt;
-    for ( int i = 0; i < n; ++i) cin >> tt;
+    for (int i = 0; i < n; ++i) cin >> tt;
   }
 
   freopen((kase + ".out").c_str(), "r", stdin);
 
-  int n; cin >> n;
+  int n;
+  cin >> n;
 
   long long ans = 0;
   int cur_day = 0;
 
   for (int i = 0; i < n; ++i) {
-    int id, b; cin >> id >> b;
+    int id, b;
+    cin >> id >> b;
 
     cur_day += mp[id].first;
     int day = cur_day;
     int k = 0;
     for (int j = 0; j < b; ++j) {
-      int bid; cin >> bid;
+      int bid;
+      cin >> bid;
       if (day > d) break;
 
       ans += sc[bid];
@@ -47,10 +51,8 @@ int main(int argc, char** argv) {
         k = 0;
         ++day;
       }
-
     }
   }
 
   cout << ans << endl;
-
 }

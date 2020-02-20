@@ -1,12 +1,11 @@
 #include <bits/stdc++.h>
 
-
 using namespace std;
 
 using ll = long long;
 
 class library {
-public:
+ public:
   int n, t, m, id;
   double sc;
   vector<int> ind;
@@ -20,65 +19,76 @@ public:
   }
 };
 
-
-double compute_score(library& l, vector<int>& sc) {
-
+double compute_score(library& l, vector<int>& sc, const int& d) {
   // l.n
 
   double acc = 0;
   for (auto b : l.ind) acc += sc[b];
 
-  int q = (l.n + l.m - 1) / l.m + l.t;
+  int q = (l.n + l.m - 1) / l.m;
 
-  return acc / q;
+  int o = q + l.t;
+  double p = acc / o;
+
+  double br = acc;
+  if (o > d) br = acc - (o - d) * p;
+
+  return br / o;
 }
 
 int main() {
-  int b, l, d; cin >> b >> l >> d;
+  int b, l, d;
+  cin >> b >> l >> d;
   vector<int> scores(b);
   for (auto& it : scores) cin >> it;
 
-
   vector<library> libs;
   for (int i = 0; i < l; ++i) {
-    int n, t, m; cin >> n >> t >> m;
+    int n, t, m;
+    cin >> n >> t >> m;
     vector<int> ind(n);
     for (auto& it : ind) cin >> it;
 
-    sort(ind.begin(), ind.end(),                \
-         [&scores](int a, int b) -> bool {
-           return scores[a] < scores[b];
-         });
+    sort(ind.begin(), ind.end(),
+         [&scores](int a, int b) -> bool { return scores[a] < scores[b]; });
 
     libs.emplace_back(n, t, m, i, ind);
   }
 
-  for (auto& lib : libs) {
-    lib.sc = compute_score(lib, scores);
+  int curd = d;
+  int libsz = libs.size();
+  for (int i = 0; i < min(1, libsz); ++i) {
+    for (int j = i; j < libsz; ++j) {
+      libs[j].sc = compute_score(libs[j], scores, curd);
+    }
+
+    sort(libs.begin() + i, libs.end(),
+         [](const library& l1, const library& l2) -> bool {
+           return l1.sc > l2.sc;
+         });
+
+    curd -= libs[i].t;
   }
-  sort(libs.begin(), libs.end(),
-       [](const library& l1, const library& l2) -> bool {
-         return l1.sc > l2.sc;
-       });
 
   set<int> books;
   vector<pair<int, vector<int>>> ans;
   int cur_cooldown = 0;
   for (auto& lib : libs) {
     if (cur_cooldown + lib.t > d) continue;
-    pair<int , vector<int>> p;
+    pair<int, vector<int>> p;
     p.first = lib.id;
-
-    cur_cooldown += lib.t;
 
     for (int b : lib.ind) {
       if (books.count(b)) continue;
       p.second.push_back(b);
       books.insert(b);
     }
-    ans.push_back(p);
-  }
 
+    if (!p.second.empty()) {
+      ans.push_back(p);
+      cur_cooldown += lib.t;
+    }
+  }
 
   cout << ans.size() << endl;
   for (auto& lib : ans) {
