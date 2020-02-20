@@ -3,9 +3,11 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-  string kase = argv[1];
 
-  string cmd = "./sol < " + kase + ".in > " + kase + ".out";
+  string exe = argv[1];
+  string kase = argv[2];
+
+  string cmd = "./" + exe + " < " + kase + ".in > " + kase + ".out";
 
   system(cmd.c_str());
 
