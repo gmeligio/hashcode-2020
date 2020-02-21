@@ -38,10 +38,25 @@ public:
   }
 };
 
+double compute_score(library& l, vector<int>& sc, const int& d) {
+  // l.n
 
+  double acc = 0;
+  for (auto b : l.ind) acc += sc[b];
+
+  int q = (l.n + l.m - 1) / l.m;
+
+  int o = q + l.t;
+  double p = acc / o;
+
+  double br = acc;
+  if (o > d) br = acc - (o - d) * p;
+
+  return br / o;
+}
 
 int main() {
-  int b, l, d; cin >> b >> l >> d;
+  int b, l, d; cin >> b >> l >> d; --d;
   vector<int> scores(b);
   for (auto& it : scores) cin >> it;
 
@@ -66,10 +81,21 @@ int main() {
   }
 
 
-  sort(libs.begin(), libs.end(),
-       [](const library& l1, const library& l2) -> bool {
-         return l1.sc > l2.sc;
-       });
+  int curd = d;
+  int libsz = libs.size();
+  for (int i = 0; i < min(1, libsz); ++i) {
+    for (int j = i; j < libsz; ++j) {
+      libs[j].sc = compute_score(libs[j], scores, curd);
+    }
+
+    sort(libs.begin() + i, libs.end(),
+         [](const library& l1, const library& l2) -> bool {
+           return l1.sc > l2.sc;
+         });
+
+    curd -= libs[i].t;
+  }
+
 
   map<int, vector<int>> b2l;
   for (int i = 0; i < (int)libs.size(); ++i) {
@@ -87,15 +113,15 @@ int main() {
 
   sort(books.begin(), books.end(),
        [](const book& b1, const book& b2) -> bool {
-         if (b1.rep != b2.rep)
-           return b1.rep < b2.rep;
-         return b1.sc > b2.sc;
+         if (b1.sc != b2.sc)
+           return b1.sc > b2.sc;
+         return b1.rep < b2.rep;
        });
 
   set<int> sl, sb;
   vector<pair<int, vector<int>>> ans;
 
-  int curd = 0;
+  curd = 0;
   for (auto& b : books) {
     if (sb.count(b.id)) continue;
     for (int i : b2l[b.id]) {
